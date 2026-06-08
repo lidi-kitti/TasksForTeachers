@@ -5,16 +5,19 @@ namespace App\Service;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Exception\AccessDeniedException;
+use App\Message\TaskUpdatedNotification;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class TaskService
 {
     public function __construct(
         private readonly TaskRepository $taskRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly MessageBusInterface $messageBus,
     ) {
     }
 
@@ -48,6 +51,11 @@ class TaskService
         $this->assertOwner($task, $currentUser);
         $task->touchUpdatedAt();
         $this->entityManager->flush();
+
+        $this->messageBus->dispatch(new TaskUpdatedNotification(
+            $task->getId(),
+            $currentUser->getEmail(),
+        ));
 
         return $task;
     }
