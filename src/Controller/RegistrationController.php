@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Service\UserRegistrationService;
+use Doctrine\DBAL\Exception\ConnectionException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +30,20 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = (string) $form->get('plainPassword')->getData();
-            $registrationService->register($user, $plainPassword);
+
+            try {
+                $registrationService->register($user, $plainPassword);
+            } catch (ConnectionException) {
+                $this->addFlash(
+                    'error',
+                    'Не удалось завершить регистрацию: база данных недоступна. Проверьте DATABASE_URL в .env и убедитесь, что PostgreSQL запущен.',
+                );
+
+                return $this->render('security/register.html.twig', [
+                    'registrationForm' => $form,
+                ]);
+            }
+
             $security->login($user);
 
             $this->addFlash('success', 'Регистрация прошла успешно. Добро пожаловать!');
