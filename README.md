@@ -89,17 +89,12 @@ composer install
 Скопируйте шаблон и укажите свои параметры:
 
 ```bash
-cp .env.local.example .env.local
+cp .env.local.example .env
 ```
 
-Пример `.env.local` для **PostgreSQL**:
+В `.env` замените `!ChangeMe!` на пароль PostgreSQL и `APP_SECRET` на случайную строку (32+ символа).
 
-```env
-APP_SECRET=случайная_строка_32_символа
-DATABASE_URL="postgresql://postgres:ВАШ_ПАРОЛЬ@127.0.0.1:5432/tasks_tz?serverVersion=16&charset=utf8"
-```
-
-> Файл `.env.local` **не коммитится** в git (содержит пароли).
+> Файл `.env` **не коммитится** в git (содержит пароли).
 
 ### 3. База данных и миграции
 
@@ -161,7 +156,7 @@ php -S localhost:8002 -t public
 
 ```bash
 cp .env.test.local.example .env.test.local
-# укажите те же credentials, что в .env.local
+# укажите те же credentials, что в .env
 
 php bin/console doctrine:database:create --env=test --if-not-exists
 php bin/console doctrine:migrations:migrate --env=test --no-interaction
