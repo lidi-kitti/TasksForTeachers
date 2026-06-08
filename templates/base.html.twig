@@ -8,16 +8,25 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
-<nav class="navbar navbar-dark bg-primary mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
     <div class="container">
-        <span class="navbar-brand">TasksForTeachers</span>
+        <a class="navbar-brand" href="{{ path('app_task_index') }}">TasksForTeachers</a>
+        {% if app.user %}
+            <div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+                <span class="navbar-text text-white">{{ app.user.name }}</span>
+                <a class="nav-link text-white" href="{{ path('app_logout') }}">Выйти</a>
+            </div>
+        {% endif %}
     </div>
 </nav>
 
 <main class="container pb-5">
     {% for label, messages in app.flashes %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }}">{{ message }}</div>
+            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endfor %}
     {% endfor %}
 

@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Список заданий{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Все задания</h1>
+    <a href="{{ path('app_task_new') }}" class="btn btn-primary">Создать задание</a>
+</div>
+
+{% if pagination|length > 0 %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Название</th>
+                    <th>Автор</th>
+                    <th>Срок</th>
+                    <th>Баллы</th>
+                    <th>Статус</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in pagination %}
+                    <tr>
+                        <td><a href="{{ path('app_task_show', {id: task.id}) }}">{{ task.title }}</a></td>
+                        <td>{{ task.author.name }}</td>
+                        <td>{{ task.dueDate|date('d.m.Y') }}</td>
+                        <td>{{ task.maxScore }}</td>
+                        <td>
+                            <span class="badge {{ task.status.value == 'active' ? 'bg-success' : 'bg-secondary' }}">
+                                {{ task.status.label }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ path('app_task_show', {id: task.id}) }}" class="btn btn-sm btn-outline-primary">Открыть</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+{% else %}
+    <div class="alert alert-info">Заданий пока нет. Создайте первое!</div>
+{% endif %}
+{% endblock %}

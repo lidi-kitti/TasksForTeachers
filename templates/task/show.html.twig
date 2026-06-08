@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ task.title }}{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h1 class="h3 mb-2">{{ task.title }}</h1>
+        <p class="text-muted mb-0">Автор: {{ task.author.name }} ({{ task.author.email }})</p>
+    </div>
+    <span class="badge fs-6 {{ task.status.value == 'active' ? 'bg-success' : 'bg-secondary' }}">
+        {{ task.status.label }}
+    </span>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Описание</dt>
+            <dd class="col-sm-9">{{ task.description|nl2br }}</dd>
+
+            <dt class="col-sm-3">Срок выполнения</dt>
+            <dd class="col-sm-9">{{ task.dueDate|date('d.m.Y') }}</dd>
+
+            <dt class="col-sm-3">Максимальный балл</dt>
+            <dd class="col-sm-9">{{ task.maxScore }}</dd>
+
+            <dt class="col-sm-3">Создано</dt>
+            <dd class="col-sm-9">{{ task.createdAt|date('d.m.Y H:i') }}</dd>
+
+            {% if task.updatedAt %}
+                <dt class="col-sm-3">Обновлено</dt>
+                <dd class="col-sm-9">{{ task.updatedAt|date('d.m.Y H:i') }}</dd>
+            {% endif %}
+        </dl>
+    </div>
+</div>
+
+<div class="d-flex gap-2">
+    <a href="{{ path('app_task_index') }}" class="btn btn-outline-secondary">← К списку</a>
+    {% if canEdit %}
+        <a href="{{ path('app_task_edit', {id: task.id}) }}" class="btn btn-primary">Редактировать</a>
+        <form method="post" action="{{ path('app_task_delete', {id: task.id}) }}" onsubmit="return confirm('Удалить задание?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ task.id) }}">
+            <button class="btn btn-danger">Удалить</button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}
